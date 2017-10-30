@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IspuWebGis.Net", "IspuWebGis.Net\IspuWebGis.Net.csproj", "{7FF65ED6-2E3D-4EDB-909C-C0DF7779A0D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D3E82D2B-9041-4199-816B-154E569DBC67} = {D3E82D2B-9041-4199-816B-154E569DBC67}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{ECE541FA-20EF-4B90-A397-B085F0DF306B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{D3E82D2B-9041-4199-816B-154E569DBC67}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ECE541FA-20EF-4B90-A397-B085F0DF306B} = {ECE541FA-20EF-4B90-A397-B085F0DF306B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
