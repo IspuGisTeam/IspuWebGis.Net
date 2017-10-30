@@ -14,5 +14,6 @@ namespace DAL.Models
         public int TaskId { get; set; }
         public int Rank { get; set; }
         public string Address { get; set; }
-        public SqlGeometry Shape { get; set; }    }
+        public SqlGeometry Shape { get; set; }
+    }
 }
