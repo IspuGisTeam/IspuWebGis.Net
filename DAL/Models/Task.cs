@@ -1,6 +1,7 @@
 ﻿using Microsoft.SqlServer.Types;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Spatial;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace DAL.Models
         public string Name { get; set; }
         public string Mode { get; set; }
         public DateTime Time { get; set; }
-        public SqlGeometry Route { get; set; }
+        public DbGeometry Route { get; set; }
         public bool isFavorite { get; set; }
         public ICollection<Point> Points { get; set; }
     }

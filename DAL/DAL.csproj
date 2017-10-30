@@ -52,6 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GisContext.cs" />
+    <Compile Include="Migrations\201710300825467_dsad.cs" />
+    <Compile Include="Migrations\201710300825467_dsad.Designer.cs">
+      <DependentUpon>201710300825467_dsad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Point.cs" />
     <Compile Include="Models\Road.cs" />
     <Compile Include="Models\Task.cs" />
@@ -62,8 +67,15 @@
     <Folder Include="Repos\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201710300825467_dsad.resx">
+      <DependentUpon>201710300825467_dsad.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
