@@ -11,7 +11,7 @@ namespace DAL
 {
     public class GisContext : DbContext
     {
-        public GisContext() : base("DBConnection")
+        public GisContext() : base("name=WebGis")
         {
                 
         }

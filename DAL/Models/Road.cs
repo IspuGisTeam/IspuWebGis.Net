@@ -14,7 +14,7 @@ namespace DAL.Models
         public short Backward { get; set; }
         public short Speed { get; set; }
         public DbGeometry Shape { get; set; }
-        public int ObjectId { get; set; }
+        public int? ObjectId { get; set; }
         public decimal Length { get; set; }
     }
 }

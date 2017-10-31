@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using IspuWebGis.Models;
+using BLL;
 
 namespace IspuWebGis.Controllers
 {
@@ -20,6 +21,14 @@ namespace IspuWebGis.Controllers
 
 
             return route;
+        }
+
+        [HttpGet]
+        public string Calculate()
+        {
+            RouteCalculation rc = new RouteCalculation();
+
+            return rc.Calculate();
         }
         public class RouteModel
         { 

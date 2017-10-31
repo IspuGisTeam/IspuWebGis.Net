@@ -52,9 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GisContext.cs" />
-    <Compile Include="Migrations\201710300825467_dsad.cs" />
-    <Compile Include="Migrations\201710300825467_dsad.Designer.cs">
-      <DependentUpon>201710300825467_dsad.cs</DependentUpon>
+    <Compile Include="Migrations\201710310952402_initial.cs" />
+    <Compile Include="Migrations\201710310952402_initial.Designer.cs">
+      <DependentUpon>201710310952402_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710311016289_initial1.cs" />
+    <Compile Include="Migrations\201710311016289_initial1.Designer.cs">
+      <DependentUpon>201710311016289_initial1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Point.cs" />
@@ -73,8 +77,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201710300825467_dsad.resx">
-      <DependentUpon>201710300825467_dsad.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710310952402_initial.resx">
+      <DependentUpon>201710310952402_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710311016289_initial1.resx">
+      <DependentUpon>201710311016289_initial1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

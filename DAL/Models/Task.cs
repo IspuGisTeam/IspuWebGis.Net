@@ -12,12 +12,14 @@ namespace DAL.Models
     {
        
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public string Name { get; set; }
         public string Mode { get; set; }
         public DateTime Time { get; set; }
         public DbGeometry Route { get; set; }
         public bool isFavorite { get; set; }
-        public ICollection<Point> Points { get; set; }
+
+        public virtual User User { get; set; }
+        public virtual ICollection<Point> Points { get; set; }
     }
 }
