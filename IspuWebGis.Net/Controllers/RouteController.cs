@@ -27,8 +27,8 @@ namespace IspuWebGis.Controllers
         public string Calculate()
         {
             RouteCalculation rc = new RouteCalculation();
-
-            return rc.Calculate();
+            return "";
+            //return rc.Calculate();
         }
         public class RouteModel
         { 
