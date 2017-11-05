@@ -143,15 +143,10 @@ namespace BLL
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    //var sqlGeom = SqlGeometry.STGeomFromText(new SqlChars(new SqlString(list[i].WKTPath)), SRID);
-
-                    //int n = (int)sqlGeom.STNumPoints();
                     Pen pen2 = new Pen(colors[i], 10.0f);
                     pen2.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
                     for (int j = 1; j < list[i].WKTPath.Count; j++)
                     {
-                        //var p1 = GetPointFromSqlGeometry(sqlGeom.STPointN(j - 1));
-                        //var p2 = GetPointFromSqlGeometry(sqlGeom.STPointN(j));
                         var p1 = list[i].WKTPath[j - 1];
                         var p2 = list[i].WKTPath[j];
                         p1 = new PointF((p1.X - xMin) / reduceRate, (p1.Y - yMin) / reduceRate);

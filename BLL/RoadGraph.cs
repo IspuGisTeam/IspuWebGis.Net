@@ -9,30 +9,8 @@ namespace BLL
 {
     internal class RoadGraph
     {
-        internal class GraphVertex
-        {
-            public int Id { get; set; }
-            public PointF Coordinates { get; set; }
-            public List<GraphEdge> Edges { get; set; }
-
-            public GraphVertex()
-            {
-                Edges = new List<GraphEdge>();
-            }
-        }
-
-        internal class GraphEdge
-        {
-            public float Length { get; set; }
-            public float Time { get; set; }
-            public GraphVertex Vert1 { get; set; }
-            public GraphVertex Vert2 { get; set; }
-            public List<PointF> Shape { get; set; }
-        }
-
+        //Singleton
         private static RoadGraph instance;
-
-        private List<GraphVertex> vertices;
 
         private RoadGraph()
         {
@@ -45,6 +23,8 @@ namespace BLL
                 instance = new RoadGraph();
             return instance;
         }
+
+        private List<GraphVertex> vertices;
 
         public void GraphInit()
         {
@@ -65,6 +45,7 @@ namespace BLL
                 var vert1 = vertices.First(v => v.Coordinates.X == point1.X && v.Coordinates.Y == point1.Y);
                 var vert2 = vertices.First(v => v.Coordinates.X == point2.X && v.Coordinates.Y == point2.Y);
                 var points = RouteUtility.GetPointsByRoad(edge);
+                //TO-DO: учитывать односторонние дороги
                 var newEdge1 = new GraphEdge
                 {
                     Length = Convert.ToSingle(edge.Length),
@@ -209,5 +190,26 @@ namespace BLL
 
             return vertices[minIndex.Value];
         }
+    }
+
+    internal class GraphVertex
+    {
+        public int Id { get; set; }
+        public PointF Coordinates { get; set; }
+        public List<GraphEdge> Edges { get; set; }
+
+        public GraphVertex()
+        {
+            Edges = new List<GraphEdge>();
+        }
+    }
+
+    internal class GraphEdge
+    {
+        public float Length { get; set; }
+        public float Time { get; set; }
+        public GraphVertex Vert1 { get; set; }
+        public GraphVertex Vert2 { get; set; }
+        public List<PointF> Shape { get; set; }
     }
 }
