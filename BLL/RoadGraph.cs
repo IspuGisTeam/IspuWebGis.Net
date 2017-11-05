@@ -71,6 +71,7 @@ namespace BLL
         public RouteCalculationCheckpointResult CalculatePathBetweenPoints(PointF startPoint, PointF finishPoint, RouteCalculationMode mode)
         {
             //TO-DO: Искать не ближайшую точку дороги, а наиболее удобную.
+            //TO-DO: Обработать кейс, когда nearStart и nearFinish окажутся одинаковыми
             var nearStart = this.GetNearVertex(startPoint);
             var nearFinish = this.GetNearVertex(finishPoint);
 

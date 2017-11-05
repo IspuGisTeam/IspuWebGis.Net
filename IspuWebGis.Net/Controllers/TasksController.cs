@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using IspuWebGis.Models;
-
+using BLL;
+using IspuWebGis.Net.Models;
+using System.Drawing;
 
 namespace IspuWebGis.Controllers
 {
@@ -12,21 +13,28 @@ namespace IspuWebGis.Controllers
         [HttpGet]
         public Object Get()
         {
-            var points = new List<CustomPoint>();
+            /*var points = new List<CustomPoint>();
             points.Add(new CustomPoint { id = 2, address = "address_text", latitude = 50, longitude = 45 });
             var task = new Task { id = 5, name = "task_name", timeOfCreation = DateTime.Now, points = points};
-            return new {tasks=new Task[] { task } };
+            return new {tasks=new Task[] { task } };*/
+            return null;
         }
         [HttpPost]
-        public Task CreateTask([FromBody]Task task)
+        public TaskResponse CreateTask([FromBody]TaskRequest taskRequest)//ClientPoint clientPoint)
         {
-            task.id = 5;
-            int i = 0;
-            foreach(var p in task.points)
+            try
             {
-                p.id = i++;
+                var parsedMode = (RouteCalculationMode)(Enum.Parse(typeof(RouteCalculationMode), taskRequest.mode));
+                var checkpoints = taskRequest.checkpoints.ConvertAll<PointF>(cp => new PointF(cp.x, cp.y));
+
+                var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
+                var taskResponse = new TaskResponse(routeCalculationRes);
+
+                return taskResponse;
+            }catch(Exception e)
+            {
+                return null;
             }
-            return task;
         }
     }
 }

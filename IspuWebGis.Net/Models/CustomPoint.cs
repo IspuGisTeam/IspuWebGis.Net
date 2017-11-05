@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IspuWebGis.Models
+namespace IspuWebGis.Net.Models
 {
     public class CustomPoint
     {
