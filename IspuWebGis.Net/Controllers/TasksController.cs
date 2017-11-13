@@ -1,4 +1,4 @@
-﻿using System;
+uusing System;
 using System.Collections.Generic;
 using System.Web.Http;
 using BLL;
@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace IspuWebGis.Controllers
 {
-    [Route("api/tasks")]
+    [RoutePrefix("api/tasks")]
     public class TasksController : ApiController
     {
         [HttpGet]
@@ -19,7 +19,30 @@ namespace IspuWebGis.Controllers
             return new {tasks=new Task[] { task } };*/
             return null;
         }
+        /* Request sample
+         * {
+	            "time" : "12-04-2020 23:11",
+	            "mode" : "ShortRoute",
+	            "name" : "Home - Work",
+	            "userId" : "3123123",
+	            "isFavourite" : false,
+	            "startPoint" : {
+		        "x" : 4557725.168,
+		        "y" : 7760357.210
+	            },
+	            "checkpoints" : [{
+			        "x" : 4560930.802,
+			        "y" : 7760020.759
+		        },
+		        {
+			        "x" : 4560932.802,
+			        "y" : 7760029.759
+		        }
+	        ]   
+        }
+         */
         [HttpPost]
+        [Route("")]
         public TaskResponse CreateTask([FromBody]TaskRequest taskRequest)//ClientPoint clientPoint)
         {
             try
@@ -35,6 +58,12 @@ namespace IspuWebGis.Controllers
             {
                 return null;
             }
+        }
+        [HttpPost]
+        [Route("madeFavourite")]
+        public bool MadeFavourite([FromBody]int taskId)//ClientPoint clientPoint)
+        {
+            return true;
         }
     }
 }
