@@ -161,16 +161,23 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
+    <Compile Include="Filters\BasicAuthenticationAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\HttpAuthenticationChallengeContextExtensions.cs" />
+    <Compile Include="Models\Authorization\Identity.cs" />
+    <Compile Include="Models\Authorization\Principal.cs" />
     <Compile Include="Models\Checkpoint.cs" />
     <Compile Include="Models\ClientPoint.cs" />
     <Compile Include="Models\CustomPoint.cs" />
+    <Compile Include="Models\MakeTaskFavourite.cs" />
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\TaskResponse.cs" />
     <Compile Include="Models\TaskRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\AddChallengeOnUnauthorizedResult.cs" />
+    <Compile Include="Results\AuthenticationFailureResult.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
   </ItemGroup>
   <ItemGroup>
