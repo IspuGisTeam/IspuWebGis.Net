@@ -4,6 +4,7 @@ using System.Web.Http;
 using BLL;
 using IspuWebGis.Net.Models;
 using System.Drawing;
+using IspuWebGis.Net.Filters;
 
 namespace IspuWebGis.Controllers
 {
@@ -42,6 +43,7 @@ namespace IspuWebGis.Controllers
         }
          */
         [HttpPost]
+        [BasicAuthentication]
         [Route("")]
         public TaskResponse CreateTask([FromBody]TaskRequest taskRequest)//ClientPoint clientPoint)
         {
@@ -60,8 +62,9 @@ namespace IspuWebGis.Controllers
             }
         }
         [HttpPost]
+        [BasicAuthentication]
         [Route("madeFavourite")]
-        public bool MadeFavourite([FromBody]int taskId)//ClientPoint clientPoint)
+        public bool MadeFavourite([FromBody]MakeTaskFavouriteRequest req)//ClientPoint clientPoint)
         {
             return true;
         }
