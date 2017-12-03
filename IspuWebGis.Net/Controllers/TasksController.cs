@@ -5,19 +5,21 @@ using BLL;
 using IspuWebGis.Net.Models;
 using System.Drawing;
 using IspuWebGis.Net.Filters;
+using DAL.Repos;
+using System.Web.Http.Cors;
 
 namespace IspuWebGis.Controllers
 {
     [RoutePrefix("api/tasks")]
+    [EnableCors("*", "*", "*")]
     public class TasksController : ApiController
     {
         [HttpGet]
         public Object Get()
         {
-            /*var points = new List<CustomPoint>();
-            points.Add(new CustomPoint { id = 2, address = "address_text", latitude = 50, longitude = 45 });
-            var task = new Task { id = 5, name = "task_name", timeOfCreation = DateTime.Now, points = points};
-            return new {tasks=new Task[] { task } };*/
+            // TODO: need to be changed
+            TasksRepo.GetTasksByUserId(-1);
+      
             return null;
         }
         /* Request sample
@@ -53,6 +55,9 @@ namespace IspuWebGis.Controllers
                 var checkpoints = taskRequest.checkpoints.ConvertAll<PointF>(cp => new PointF(cp.x, cp.y));
 
                 var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
+
+              /*  TasksRepo.CreateNewTask(taskRequest.name, taskRequest.mode,
+                    taskRequest.startPoint,taskRequest.isFavourite,)*/
                 var taskResponse = new TaskResponse(routeCalculationRes);
 
                 return taskResponse;
@@ -66,6 +71,7 @@ namespace IspuWebGis.Controllers
         [Route("madeFavourite")]
         public bool MadeFavourite([FromBody]MakeTaskFavouriteRequest req)//ClientPoint clientPoint)
         {
+            TasksRepo.SetTaskAsFavourite((int)req.taskId);
             return true;
         }
     }
