@@ -111,9 +111,9 @@ namespace BLL
             bmp.Save(outputPath);
         }
 
-        public static void DrawMapToBmpWithPath(string outputPath, List<RouteCalculationCheckpointResult> list, bool drawPoint = false, int reduceRate = 6)
+        public static void DrawMapToBmpWithPath(string outputPath, RouteCalculationResult res, bool drawPoint = false, int reduceRate = 6)
         {
-            Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.DarkViolet };
+            Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.DarkViolet, Color.Chocolate, Color.DarkGray };
 
             float xMin = GetPointsFromRoadDB().Min(p => p.X);
             float xMax = GetPointsFromRoadDB().Max(p => p.X);
@@ -140,7 +140,7 @@ namespace BLL
                     var p2 = new PointF((line.Item2.X - xMin) / reduceRate, (line.Item2.Y - yMin) / reduceRate);
                     graphics.DrawLine(pen1, p1, p2);
                 }
-
+                var list = res.Checkpoints;
                 for (int i = 0; i < list.Count; i++)
                 {
                     Pen pen2 = new Pen(colors[i], 10.0f);
@@ -154,8 +154,10 @@ namespace BLL
                         graphics.DrawLine(pen2, p1, p2);
                     }
                 }
+                var font = new Font("Arial", 40, FontStyle.Bold);
+                graphics.DrawString("Length: " + res.TotalLength.ToString(), font, Brushes.Black, 0 , bmp.Height / 6);
+                graphics.DrawString("Time: " + res.TotalTime.ToString(), font, Brushes.Black, 0, bmp.Height / 6 + 60);
             }
-
             bmp.Save(outputPath);
         }
 

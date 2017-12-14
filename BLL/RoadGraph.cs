@@ -77,31 +77,25 @@ namespace BLL
 
             var calcResult = CalculatePathBetweenVertices(nearStart, nearFinish, mode);
 
-            if (calcResult.Item1.First() != startPoint)
+            if (calcResult.WKTPath.FirstOrDefault() != startPoint)
             {
-                calcResult.Item1.Insert(0, startPoint);
+                calcResult.WKTPath.Insert(0, startPoint);
             }
 
-            if (calcResult.Item1.Last() != finishPoint)
+            if (calcResult.WKTPath.LastOrDefault() != finishPoint)
             {
-                calcResult.Item1.Add(finishPoint);
+                calcResult.WKTPath.Add(finishPoint);
             }
 
             // Length и Time маршрута учитывают только движение по дорогам
             // и не учитывают время и длину маршрута до ближайшей точки дороги
-            var result = new RouteCalculationCheckpointResult
-            {
-                StartPoint = startPoint,
-                FinishPoint = finishPoint,
-                WKTPath = calcResult.Item1,
-                Length = calcResult.Item2,
-                Time = calcResult.Item3
-            };
+            calcResult.StartPoint = startPoint;
+            calcResult.FinishPoint = finishPoint;
 
-            return result;
+            return calcResult;
         }
 
-        public Tuple<List<PointF>, float, float> CalculatePathBetweenVertices(GraphVertex vertex1, GraphVertex vertex2, RouteCalculationMode mode)
+        public int[] CalculatePathFromVertex(GraphVertex vertex1, RouteCalculationMode mode)
         {
             //Реализация алгоритма Дейкстры на основе очереди с приоритетом (Heap)
             int n = vertices.Count;
@@ -114,6 +108,7 @@ namespace BLL
             }
 
             d[vertex1.Id] = 0;
+            p[vertex1.Id] = -2;
 
             var queue = new SimplePriorityQueue<int, float>();
             queue.Enqueue(vertex1.Id, 0);
@@ -140,21 +135,27 @@ namespace BLL
                 }
             }
 
-            if (p[vertex2.Id] == -1)
+            // return parent array
+            return p;
+        }
+
+        private RouteCalculationCheckpointResult restoreWay(int[] parentArray, int vertexTo)
+        {
+            if (parentArray[vertexTo] == -1)
             {
                 //не нашли путь
-                throw new Exception();
+                throw new Exception("One of the points of the graph is unreachable");
             }
 
             // восстанавливаем путь
-            int currentPoint = vertex2.Id;
+            int currentPoint = vertexTo;
 
             var vertPath = new List<int>();
 
-            while (currentPoint != -1)
+            while (currentPoint != -2 && currentPoint != -1)
             {
                 vertPath.Add(currentPoint);
-                currentPoint = p[currentPoint];
+                currentPoint = parentArray[currentPoint];
             }
 
             vertPath.Reverse();
@@ -172,7 +173,19 @@ namespace BLL
             float length = edgePath.Sum(edge => edge.Length);
             float time = edgePath.Sum(edge => edge.Time);
 
-            return new Tuple<List<PointF>, float, float>(wktPath, length, time);
+            var result = new RouteCalculationCheckpointResult();
+            result.WKTPath = wktPath;
+            result.Length = length;
+            result.Time = time;
+            return result;
+        }
+
+        public RouteCalculationCheckpointResult CalculatePathBetweenVertices(GraphVertex vertex1, GraphVertex vertex2, RouteCalculationMode mode)
+        {
+            var parentArray = CalculatePathFromVertex(vertex1, mode);
+
+            var result = restoreWay(parentArray, vertex2.Id);
+            return result;
         }
 
         private GraphVertex GetNearVertex(PointF point)
@@ -190,6 +203,82 @@ namespace BLL
             }
 
             return vertices[minIndex.Value];
+        }
+
+        public RouteCalculationCheckpointResult[][] CalculateTSPTable(PointF startPoint, List<PointF> checkpoints, RouteCalculationMode mode)
+        {
+            var startPointV = this.GetNearVertex(startPoint);
+            var checkPointsV = checkpoints.ConvertAll<GraphVertex>(point => this.GetNearVertex(point));
+
+            // вставляем начальную точку на первую позицию
+            checkPointsV.Insert(0, startPointV);
+
+            RouteCalculationCheckpointResult[][] table = new RouteCalculationCheckpointResult[checkPointsV.Count][];
+            for(int i = 0; i < checkPointsV.Count; i++)
+            {
+                table[i] = new RouteCalculationCheckpointResult[checkPointsV.Count];
+                var parentArray = this.CalculatePathFromVertex(checkPointsV[i], mode);
+                for(int j = 0; j < checkPointsV.Count; j++)
+                {
+                    table[i][j] = this.restoreWay(parentArray, checkPointsV[j].Id);
+                    table[i][j].StartPoint = (i == 0) ? startPoint : checkpoints[i - 1];
+                    table[i][j].FinishPoint = (j == 0) ? startPoint : checkpoints[j - 1];
+                }
+            }
+
+            return table;
+
+        }
+
+        public RouteCalculationResult CalculateTSPOptimalWay(RouteCalculationCheckpointResult[][] TSPTable, int startPoint, RouteCalculationMode mode)
+        {
+            RouteCalculationResult result = null;
+            bool[] visited = new bool[TSPTable.Length];
+            int[] order = new int[TSPTable.Length];
+            visited[startPoint] = true;
+            order[0] = startPoint;
+            TSPRecurse(TSPTable, startPoint, 0.0f, 0.0f, visited, order, 1, ref result, mode);
+
+            return result;
+        }
+
+        private void TSPRecurse(RouteCalculationCheckpointResult[][] TSPTable, int currentPoint, float tempLength, float tempTime, bool[] visited, int[] order, int orderNum, ref RouteCalculationResult optimalResult, RouteCalculationMode mode)
+        {
+            if (visited.All(item => item))
+            {
+                if (optimalResult == null || (mode == RouteCalculationMode.ShortRoute && tempLength < optimalResult.TotalLength) || (mode == RouteCalculationMode.FastRoute && tempTime < optimalResult.TotalTime))
+                {
+                    optimalResult = new RouteCalculationResult();
+                    optimalResult.TotalLength = tempLength;
+                    optimalResult.TotalTime = tempTime;
+                    optimalResult.Checkpoints = new List<RouteCalculationCheckpointResult>();
+                    for(int i = 1; i < order.Length; i++)
+                    {
+                        optimalResult.Checkpoints.Add(TSPTable[order[i - 1]][order[i]]);
+                    }
+                }
+
+                return;
+            }
+
+            if (optimalResult != null && ((mode == RouteCalculationMode.ShortRoute && tempLength > optimalResult.TotalLength) || (mode == RouteCalculationMode.FastRoute && tempTime > optimalResult.TotalTime))) {
+                return;
+            }
+
+            for(int i = 0; i < TSPTable.Length; i++)
+            {
+                if (visited[i])
+                {
+                    continue;
+                }
+
+                float newTempLength = tempLength + TSPTable[currentPoint][i].Length;
+                float newTempTime = tempTime + TSPTable[currentPoint][i].Time;
+                visited[i] = true;
+                order[orderNum] = i;
+                TSPRecurse(TSPTable, i, newTempLength, newTempTime, visited, order, orderNum + 1, ref optimalResult, mode);
+                visited[i] = false;
+            }
         }
     }
 
