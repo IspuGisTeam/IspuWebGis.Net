@@ -4,21 +4,24 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http.Filters;
 using IspuWebGis.Net.Results;
 using IspuWebGis.Net.Helpers;
 using IspuWebGis.Net.Models.Authorization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using DAL.Repos;
+using DAL.Models;
+using ThreadedTask = System.Threading.Tasks.Task;
 
 namespace IspuWebGis.Net.Filters
 {
     public class BasicAuthenticationAttribute : Attribute, IAuthenticationFilter
     {
         public string Realm { get; set; }
+
         private const string TokenName = "token";
-        public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+        public async ThreadedTask AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
             HttpRequestMessage request = context.Request;
 
@@ -57,18 +60,21 @@ namespace IspuWebGis.Net.Filters
                 // Authentication was attempted and succeeded. Set Principal to the authenticated user.
                 context.Principal = principal;
             }
+
+
         }
 
         //TODO: Need to be changed
         private IPrincipal GetPrincipal(string token)
         {
-            if(token != "token")
+            User user = AuthorizationRepo.authorizeByToken(token);
+            if(user == null)
             {
                 return null;
             }
 
-            IIdentity identity = new Identity("IAmUser", "Token", true);
-            IPrincipal principal = new Principal(identity, "User");
+            IIdentity identity = new Identity(user.UserName, "Token", true);
+            IPrincipal principal = new Principal(identity, user.UserName);
 
             return principal;
         }
@@ -124,10 +130,10 @@ namespace IspuWebGis.Net.Filters
             return new Tuple<string, string>(userName, password);
         }
 
-        public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
+        public ThreadedTask ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
             Challenge(context);
-            return Task.FromResult(0);
+            return ThreadedTask.FromResult(0);
         }
 
         private void Challenge(HttpAuthenticationChallengeContext context)

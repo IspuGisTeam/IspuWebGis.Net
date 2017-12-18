@@ -10,12 +10,10 @@ namespace DAL.Models
 {
     public class Point
      {
-        
+        public double X { get; set; }
+        public double Y { get; set; }
         public int Id { get; set; }
         public int? TaskId { get; set; }
-        public int Rank { get; set; }
-        public string Address { get; set; }
-        public DbGeometry Shape { get; set; }
 
         public virtual  Task Task { get; set; }
     }

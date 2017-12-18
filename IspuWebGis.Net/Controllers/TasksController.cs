@@ -7,6 +7,7 @@ using System.Drawing;
 using IspuWebGis.Net.Filters;
 using DAL.Repos;
 using System.Web.Http.Cors;
+using System.Web;
 
 namespace IspuWebGis.Controllers
 {
@@ -15,6 +16,8 @@ namespace IspuWebGis.Controllers
     public class TasksController : ApiController
     {
         [HttpGet]
+        [Route("")]
+        [BasicAuthentication]
         public Object Get()
         {
             // TODO: need to be changed
@@ -52,13 +55,14 @@ namespace IspuWebGis.Controllers
             try
             {
                 var parsedMode = (RouteCalculationMode)(Enum.Parse(typeof(RouteCalculationMode), taskRequest.mode));
-                var checkpoints = taskRequest.checkpoints.ConvertAll<PointF>(cp => new PointF(cp.x, cp.y));
+                var checkpoints = taskRequest.checkpoints.ConvertAll(cp => new PointF(cp.x, cp.y));
+                var checkpointsForDAL = taskRequest.checkpoints.ConvertAll(cp => new DAL.Models.Point { X = (int)cp.x, Y = (int)cp.y });
 
                 var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
 
-              /*  TasksRepo.CreateNewTask(taskRequest.name, taskRequest.mode,
-                    taskRequest.startPoint,taskRequest.isFavourite,)*/
-                var taskResponse = new TaskResponse(routeCalculationRes);
+                createTask(taskRequest, routeCalculationRes, checkpointsForDAL);
+
+                var taskResponse = new TaskResponse(routeCalculationRes,taskRequest.name, -1,taskRequest.isFavourite,1,checkpoints,taskRequest.time);
 
                 return taskResponse;
             }catch(Exception e)
@@ -73,6 +77,41 @@ namespace IspuWebGis.Controllers
         {
             TasksRepo.SetTaskAsFavourite((int)req.taskId);
             return true;
+        }
+
+        private static void createTask(TaskRequest taskRequest, RouteCalculationResult routeCalculationRes, List<DAL.Models.Point> checkPoints)
+        {
+            var newCheckPoints = new List<DAL.Models.Point>();
+            float totalLength = 0;
+            float totalTime = 0;
+
+            ICollection<RouteCalculationCheckpointResult> points = routeCalculationRes.Checkpoints;
+            foreach (var checkPoint in points)
+            {
+                var newPoints = convertPointsList(checkPoint.WKTPath);
+
+                totalLength += checkPoint.Length;
+                totalTime += checkPoint.Time;
+
+                newCheckPoints.AddRange(newPoints);
+            }
+
+            TasksRepo.CreateNewTask(taskRequest.name, taskRequest.mode, DateTime.Now,
+                   newCheckPoints, taskRequest.isFavourite, HttpContext.Current.User.Identity.Name, checkPoints);
+        }
+
+        private static ICollection<DAL.Models.Point> convertPointsList(ICollection<PointF> points)
+        {
+            var newPoints = new List<DAL.Models.Point>();
+            foreach (var point in points)
+            {
+                var p = new DAL.Models.Point();
+                p.X = point.X;
+                p.Y = point.Y;
+                newPoints.Add(p);
+            }
+
+            return newPoints;
         }
     }
 }

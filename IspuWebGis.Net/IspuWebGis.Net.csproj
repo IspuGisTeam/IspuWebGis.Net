@@ -165,13 +165,14 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\AuthorizationController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
     <Compile Include="Filters\BasicAuthenticationAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\HttpAuthenticationChallengeContextExtensions.cs" />
+    <Compile Include="Models\Authorization\AuthRequest.cs" />
     <Compile Include="Models\Authorization\Identity.cs" />
     <Compile Include="Models\Authorization\Principal.cs" />
     <Compile Include="Models\Checkpoint.cs" />
