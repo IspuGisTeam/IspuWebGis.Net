@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using DAL.Repos;
 using DAL.Models;
 using ThreadedTask = System.Threading.Tasks.Task;
+using System.Web;
 
 namespace IspuWebGis.Net.Filters
 {
@@ -26,22 +27,35 @@ namespace IspuWebGis.Net.Filters
             HttpRequestMessage request = context.Request;
 
             var userNameAndPasword = request.GetQueryNameValuePairs();
-            string requestContent = request.Content.ReadAsStringAsync().Result;
-          
-            JObject contentObj = JObject.Parse(requestContent);
-            string token = null;
 
-            try
+            string requestContent = request.Content.ReadAsStringAsync().Result;
+            string token = null;
+            if (!String.IsNullOrEmpty(requestContent))
             {
-                token = contentObj[TokenName].ToString();
+                JObject contentObj = JObject.Parse(requestContent);
+                
+                try
+                {
+                    token = contentObj[TokenName].ToString();
+                }
+                catch (Exception e)
+                {
+                    context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                }
+
+                contentObj.Remove(TokenName);
+                request.Content = new StringContent(JsonConvert.SerializeObject(contentObj), Encoding.UTF8,
+                                        "application/json");
             }
-            catch (Exception e)
+            else
             {
-                context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                try
+                {
+                    token = HttpUtility.ParseQueryString(request.RequestUri.Query).Get("token");
+                }catch(Exception e){
+                    context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                }
             }
-            contentObj.Remove(TokenName);
-            request.Content = new StringContent(JsonConvert.SerializeObject(contentObj), Encoding.UTF8,
-                                    "application/json");
 
             if (token == null)
             {

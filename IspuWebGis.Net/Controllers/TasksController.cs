@@ -18,12 +18,11 @@ namespace IspuWebGis.Controllers
         [HttpGet]
         [Route("")]
         [BasicAuthentication]
-        public Object Get()
+        public IEnumerable<TaskResponse> Get()
         {
             // TODO: need to be changed
-            TasksRepo.GetTasksByUserId(-1);
       
-            return null;
+            return makeTasksResponseList(TasksRepo.GetTasksByUserName(HttpContext.Current.User.Identity.Name));
         }
         /* Request sample
          * {
@@ -50,7 +49,7 @@ namespace IspuWebGis.Controllers
         [HttpPost]
         [BasicAuthentication]
         [Route("")]
-        public TaskResponse CreateTask([FromBody]TaskRequest taskRequest)//ClientPoint clientPoint)
+        public Object CreateTask([FromBody]TaskRequest taskRequest)//ClientPoint clientPoint)
         {
             try
             {
@@ -67,7 +66,40 @@ namespace IspuWebGis.Controllers
                 return taskResponse;
             }catch(Exception e)
             {
-                return null;
+                return e.Message;
+            }
+        }
+        [HttpDelete]
+        [Route("")]
+        [BasicAuthentication]
+        public Object Delete(int taskId)
+        {
+            // TODO: need to be changed
+            try
+            {
+                TasksRepo.DeleteTask(taskId, HttpContext.Current.User.Identity.Name);
+
+                return "Success";
+            }catch(Exception e)
+            {
+                return e.Message;
+            }
+        }
+        [HttpDelete]
+        [Route("")]
+        [BasicAuthentication]
+        public Object Delete()
+        {
+            // TODO: need to be changed
+            try
+            {
+                TasksRepo.DeleteAllTasks(HttpContext.Current.User.Identity.Name);
+
+                return "Success";
+            }
+            catch (Exception e)
+            {
+                return e.Message;
             }
         }
         [HttpPost]
@@ -112,6 +144,50 @@ namespace IspuWebGis.Controllers
             }
 
             return newPoints;
+        }
+
+        private static List<PointF> convertPointsList(ICollection<DAL.Models.Point> points)
+        {
+            if (points == null)
+                return null;
+            var newPoints = new List<PointF>();
+            foreach (var point in points)
+            {
+                var p = new PointF();
+                p.X = (float)point.X;
+                p.Y = (float)point.Y;
+                newPoints.Add(p);
+            }
+
+            return newPoints;
+        }
+
+
+        private static IEnumerable<TaskResponse> makeTasksResponseList(IEnumerable<DAL.Models.Task> tasks)
+        {
+            var newTasks = new List<TaskResponse>();
+            foreach (var task in tasks)
+            {
+                var taskResponse = new TaskResponse();
+                taskResponse.taskId = task.Id;
+                taskResponse.time = task.Time;
+                taskResponse.IsFavourite = task.isFavorite;
+                taskResponse.name = task.Name;
+                taskResponse.checkpoints = convertPointsList(task.Points);
+                taskResponse.routeResult = new Route();
+                taskResponse.routeResult.mode = task.Mode;
+
+                taskResponse.routeResult.totalTime = task.Time.Ticks;
+                taskResponse.routeResult.checkpoints = new List<Checkpoint>();
+                var checkPoint = new Checkpoint();
+                checkPoint.length = 0;
+                checkPoint.time = task.Time.Ticks;
+                checkPoint.WKTPath = convertPointsList(task.Route);
+
+                newTasks.Add(taskResponse);
+            }
+
+            return newTasks;
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Web.Http.Cors;
 
 namespace IspuWebGis.Net.Controllers
 {
-    [RoutePrefix("api/authorize")]
+    [RoutePrefix("api/newuser")]
     [EnableCors("*", "*", "*")]
     public class AuthorizationController : ApiController
     {
@@ -25,7 +25,7 @@ namespace IspuWebGis.Net.Controllers
             }
             catch (Exception e)
             {
-                return null;
+                return e.Message;
             }
         }
     }

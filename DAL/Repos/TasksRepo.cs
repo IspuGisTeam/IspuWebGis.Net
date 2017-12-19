@@ -10,12 +10,12 @@ namespace DAL.Repos
 {
     public class TasksRepo
     {
-        public static IEnumerable<Task> GetTasksByUserId(int userId)
+        public static IEnumerable<Task> GetTasksByUserName(string userName)
         {
             IEnumerable<Task> tasks = new GisContext().Tasks.ToList();
             foreach (var task in tasks)
             {
-                if (task.UserId == userId)
+                if (task.User.UserName == userName)
                 {
                     yield return task;
                 }
@@ -35,7 +35,6 @@ namespace DAL.Repos
         {
             var dbContext = new GisContext();
 
-            
             var userRes = dbContext.Users.Where(u => u.UserName == userName);
             
             User user = userRes.First();
@@ -57,6 +56,25 @@ namespace DAL.Repos
             return task.Id;
         }
 
+        public static void DeleteTask(int taskId,string userName)
+        {
+            var dbContext = new GisContext();
+            
+            Task task = dbContext.Tasks.Where(t => t.Id== taskId).First();
+            
+            dbContext.Tasks.Remove(task);
+            dbContext.SaveChanges();
+        }
+
+        public static void DeleteAllTasks(string userName)
+        {
+            var dbContext = new GisContext();
+
+            dbContext.Tasks.RemoveRange(dbContext.Tasks.Where(t => t.User.UserName == userName));
+
+            dbContext.SaveChanges();
+        }
+
         private static string CreateWKTByPoints(IEnumerable<PointF> list)
         {
             List<PointF> arr = new List<PointF>();
@@ -73,6 +91,5 @@ namespace DAL.Repos
             string pointsStr = string.Join(",", arr.Select(p => string.Format("{0} {1}", p.X, p.Y)));
             return string.Format("LINESTRING ({0})", pointsStr);
         }
-
     }
 }

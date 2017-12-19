@@ -26,6 +26,8 @@ namespace IspuWebGis.Net.Models
             UserId = userId;
             this.checkpoints = checkpoints;
         }
+
+        public TaskResponse() { }
         public long? taskId { get; set; }
         public string name { get; set; }
         public List<PointF> checkpoints { get; set; }

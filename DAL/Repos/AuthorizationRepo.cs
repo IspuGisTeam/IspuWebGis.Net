@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Repos
 {
+    //token = MTb0my1H1UgeJHVEzQ24SZQkQ0Xw0Tn5
     public class AuthorizationRepo
     {
         private static readonly TimeSpan tokenExpTime = new TimeSpan(4, 0, 0);
@@ -16,7 +17,9 @@ namespace DAL.Repos
             User user = dbContext.Users.Add(new User
             {
                 UserName = name,
-                Password = password
+                Password = password,
+                Token = generateToken(),
+                TokenCreationTime = DateTime.Now
             });
             dbContext.SaveChanges();
 
