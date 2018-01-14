@@ -4,41 +4,58 @@ using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http.Filters;
 using IspuWebGis.Net.Results;
 using IspuWebGis.Net.Helpers;
 using IspuWebGis.Net.Models.Authorization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using DAL.Repos;
+using DAL.Models;
+using ThreadedTask = System.Threading.Tasks.Task;
+using System.Web;
 
 namespace IspuWebGis.Net.Filters
 {
     public class BasicAuthenticationAttribute : Attribute, IAuthenticationFilter
     {
         public string Realm { get; set; }
+
         private const string TokenName = "token";
-        public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+        public async ThreadedTask AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
             HttpRequestMessage request = context.Request;
 
             var userNameAndPasword = request.GetQueryNameValuePairs();
-            string requestContent = request.Content.ReadAsStringAsync().Result;
-          
-            JObject contentObj = JObject.Parse(requestContent);
-            string token = null;
 
-            try
+            string requestContent = request.Content.ReadAsStringAsync().Result;
+            string token = null;
+            if (!String.IsNullOrEmpty(requestContent))
             {
-                token = contentObj[TokenName].ToString();
+                JObject contentObj = JObject.Parse(requestContent);
+                
+                try
+                {
+                    token = contentObj[TokenName].ToString();
+                }
+                catch (Exception e)
+                {
+                    context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                }
+
+                contentObj.Remove(TokenName);
+                request.Content = new StringContent(JsonConvert.SerializeObject(contentObj), Encoding.UTF8,
+                                        "application/json");
             }
-            catch (Exception e)
+            else
             {
-                context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                try
+                {
+                    token = HttpUtility.ParseQueryString(request.RequestUri.Query).Get("token");
+                }catch(Exception e){
+                    context.ErrorResult = new AuthenticationFailureResult("Missing token in request or the format of token is invalid", request);
+                }
             }
-            contentObj.Remove(TokenName);
-            request.Content = new StringContent(JsonConvert.SerializeObject(contentObj), Encoding.UTF8,
-                                    "application/json");
 
             if (token == null)
             {
@@ -57,18 +74,21 @@ namespace IspuWebGis.Net.Filters
                 // Authentication was attempted and succeeded. Set Principal to the authenticated user.
                 context.Principal = principal;
             }
+
+
         }
 
         //TODO: Need to be changed
         private IPrincipal GetPrincipal(string token)
         {
-            if(token != "token")
+            User user = AuthorizationRepo.authorizeByToken(token);
+            if(user == null)
             {
                 return null;
             }
 
-            IIdentity identity = new Identity("IAmUser", "Token", true);
-            IPrincipal principal = new Principal(identity, "User");
+            IIdentity identity = new Identity(user.UserName, "Token", true);
+            IPrincipal principal = new Principal(identity, user.UserName);
 
             return principal;
         }
@@ -124,10 +144,10 @@ namespace IspuWebGis.Net.Filters
             return new Tuple<string, string>(userName, password);
         }
 
-        public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
+        public ThreadedTask ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
             Challenge(context);
-            return Task.FromResult(0);
+            return ThreadedTask.FromResult(0);
         }
 
         private void Challenge(HttpAuthenticationChallengeContext context)

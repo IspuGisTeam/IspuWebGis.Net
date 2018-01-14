@@ -43,6 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,12 +61,17 @@
     <Compile Include="Migrations\201710311016289_initial1.Designer.cs">
       <DependentUpon>201710311016289_initial1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712192154151_modelChange.cs" />
+    <Compile Include="Migrations\201712192154151_modelChange.Designer.cs">
+      <DependentUpon>201712192154151_modelChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Point.cs" />
     <Compile Include="Models\Road.cs" />
     <Compile Include="Models\Task.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repos\AuthorizationRepo.cs" />
     <Compile Include="Repos\TasksRepo.cs" />
   </ItemGroup>
   <ItemGroup />
@@ -81,6 +87,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710311016289_initial1.resx">
       <DependentUpon>201710311016289_initial1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712192154151_modelChange.resx">
+      <DependentUpon>201712192154151_modelChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

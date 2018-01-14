@@ -17,6 +17,7 @@ namespace IspuWebGis.Net.Models
             time = checkpoint.Time;
             length = checkpoint.Length;
         }
+        public Checkpoint() { }
 
         public ClientPoint startPoint;
         public ClientPoint finishPoint;
