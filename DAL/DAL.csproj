@@ -65,6 +65,10 @@
     <Compile Include="Migrations\201712192154151_modelChange.Designer.cs">
       <DependentUpon>201712192154151_modelChange.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801162115433_deletion.cs" />
+    <Compile Include="Migrations\201801162115433_deletion.Designer.cs">
+      <DependentUpon>201801162115433_deletion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Point.cs" />
     <Compile Include="Models\Road.cs" />
@@ -90,6 +94,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712192154151_modelChange.resx">
       <DependentUpon>201712192154151_modelChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801162115433_deletion.resx">
+      <DependentUpon>201801162115433_deletion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

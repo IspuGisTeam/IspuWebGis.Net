@@ -72,7 +72,7 @@ namespace IspuWebGis.Controllers
         [HttpDelete]
         [Route("")]
         [BasicAuthentication]
-        public Object Delete(int taskId)
+        public Object Delete([FromUri]int taskId)
         {
             // TODO: need to be changed
             try
