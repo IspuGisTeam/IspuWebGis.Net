@@ -81,6 +81,12 @@ namespace IspuWebGis.Net.Filters
         //TODO: Need to be changed
         private IPrincipal GetPrincipal(string token)
         {
+            if(token == "anonim")
+            {
+                IIdentity identity_an = new Identity("_anonim", "Token", true);
+                IPrincipal principal_an = new Principal(identity_an, "_anonim");
+                return principal_an;
+            }
             User user = AuthorizationRepo.authorizeByToken(token);
             if(user == null)
             {

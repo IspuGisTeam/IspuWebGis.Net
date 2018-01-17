@@ -173,8 +173,10 @@
     </Compile>
     <Compile Include="Helpers\HttpAuthenticationChallengeContextExtensions.cs" />
     <Compile Include="Models\Authorization\AuthRequest.cs" />
+    <Compile Include="Models\Authorization\AuthResponse.cs" />
     <Compile Include="Models\Authorization\Identity.cs" />
     <Compile Include="Models\Authorization\Principal.cs" />
+    <Compile Include="Models\Authorization\UserResponse.cs" />
     <Compile Include="Models\Checkpoint.cs" />
     <Compile Include="Models\ClientPoint.cs" />
     <Compile Include="Models\CustomPoint.cs" />
