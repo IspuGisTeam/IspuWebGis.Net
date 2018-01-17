@@ -25,6 +25,10 @@ namespace DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Road>().Property(x => x.Length).HasColumnType("numeric");
+            modelBuilder.Entity<Task>()
+                .HasMany<Point>(c => c.Points)
+                .WithOptional(x => x.Task)
+                .WillCascadeOnDelete(true);
 
         }
 

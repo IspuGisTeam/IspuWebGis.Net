@@ -47,13 +47,19 @@ namespace DAL.Repos
                 user.Token = "token";
                 return user;
             }
-
+            User userOb = null;
             var userRes = dbContext.Users.Where(user => user.Token == token);
-            
-            var userOb = userRes.ToArray().First();
-            if (!checkTokenExpiration(userOb))
+            try
             {
-                updateToken(userOb);
+                userOb = userRes.ToArray().First();
+                if (!checkTokenExpiration(userOb))
+                {
+                    updateToken(userOb);
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
             }
 
             return userOb;

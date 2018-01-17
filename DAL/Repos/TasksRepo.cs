@@ -38,7 +38,9 @@ namespace DAL.Repos
             var userRes = dbContext.Users.Where(u => u.UserName == userName);
             
             User user = userRes.First();
-                
+
+            dbContext.Points.AddRange(route);
+
             Task task = dbContext.Tasks.Add(new Task
             {
                 Name = name,
@@ -69,8 +71,17 @@ namespace DAL.Repos
         public static void DeleteAllTasks(string userName)
         {
             var dbContext = new GisContext();
-
-            dbContext.Tasks.RemoveRange(dbContext.Tasks.Where(t => t.User.UserName == userName));
+            var tasks = dbContext.Tasks.ToList();
+          /*  IEnumerable<Point> points = null;
+            foreach (var task in tasks){
+                if (points != null)
+                    points = points.Union(task.Points);
+                else
+                    points = task.Points;
+            }
+         
+            dbContext.Points.RemoveRange(points);*/
+            dbContext.Tasks.RemoveRange(tasks);
 
             dbContext.SaveChanges();
         }
