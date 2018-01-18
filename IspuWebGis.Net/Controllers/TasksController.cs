@@ -59,7 +59,10 @@ namespace IspuWebGis.Controllers
 
                 var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
 
-                createTask(taskRequest, routeCalculationRes, checkpointsForDAL);
+                if(HttpContext.Current.User.Identity.Name != "_anonim")
+                {
+                    createTask(taskRequest, routeCalculationRes, checkpointsForDAL);
+                }
 
                 var taskResponse = new TaskResponse(routeCalculationRes,taskRequest.name, -1,taskRequest.isFavourite,1,checkpoints,taskRequest.time);
 

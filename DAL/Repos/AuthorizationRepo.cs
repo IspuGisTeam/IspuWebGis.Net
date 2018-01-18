@@ -9,7 +9,7 @@ namespace DAL.Repos
     //token = MTb0my1H1UgeJHVEzQ24SZQkQ0Xw0Tn5
     public class AuthorizationRepo
     {
-        private static readonly TimeSpan tokenExpTime = new TimeSpan(4, 0, 0);
+        public static readonly TimeSpan tokenExpTime = new TimeSpan(365,0, 0, 0, 0);
 
         public static string createUser(string name, string password)
         {
@@ -30,8 +30,18 @@ namespace DAL.Repos
         {
             var dbContext = new GisContext();
             var userRes = dbContext.Users.Where(user => user.UserName == name && user.Password == password);
+            var userOb = userRes.ToArray().First();
            
-            return userRes.ToArray().First();
+            if (userOb == null)
+            {
+                return null;
+            }
+
+            updateToken(userOb);
+            dbContext.SaveChanges();
+
+
+            return userOb;
         }
 
         public static User authorizeByToken(string token)
@@ -54,7 +64,7 @@ namespace DAL.Repos
                 userOb = userRes.ToArray().First();
                 if (!checkTokenExpiration(userOb))
                 {
-                    updateToken(userOb);
+                    return null;
                 }
             }
             catch (Exception e)
@@ -75,7 +85,7 @@ namespace DAL.Repos
         private static bool checkTokenExpiration(User user)
         {
             DateTime now = DateTime.Now;
-            if ((now - user.TokenCreationTime).CompareTo(tokenExpTime) > 0)
+            if ((now - user.TokenCreationTime).CompareTo(tokenExpTime) < 0)
             {
                 return true;
             }
