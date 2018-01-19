@@ -57,7 +57,7 @@ namespace IspuWebGis.Controllers
                 var checkpoints = taskRequest.checkpoints.ConvertAll(cp => new PointF(cp.x, cp.y));
                 var checkpointsForDAL = taskRequest.checkpoints.ConvertAll(cp => new DAL.Models.Point { X = (int)cp.x, Y = (int)cp.y });
 
-                var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
+                var routeCalculationRes = new RouteCalculation().CalculateTSP(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
 
                 if(HttpContext.Current.User.Identity.Name != "_anonim")
                 {
