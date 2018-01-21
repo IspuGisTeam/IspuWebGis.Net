@@ -8,8 +8,12 @@ namespace DAL.Migrations
         public override void Up()
         {
             DropForeignKey("dbo.Points", "TaskId", "dbo.Tasks");
+            DropForeignKey("dbo.Points", "Task_Id", "dbo.Tasks");
             DropForeignKey("dbo.Points", "Task_Id1", "dbo.Tasks");
+
+            //DropIndex("dbo.Points", "IX_Task_Id");
             DropIndex("dbo.Points", "IX_Task_Id1");
+            //DropColumn("dbo.Points", "Task_Id");
             DropColumn("dbo.Points", "Task_Id1");
           
             AddForeignKey("dbo.Points", "TaskId", "dbo.Tasks", "Id", cascadeDelete: true);
@@ -19,9 +23,13 @@ namespace DAL.Migrations
         {
             DropForeignKey("dbo.Points", "TaskId", "dbo.Tasks");
          
+           // AddColumn("dbo.Points", "Task_Id1", c => c.Int());
             AddColumn("dbo.Points", "Task_Id1", c => c.Int());
+           // CreateIndex("dbo.Points", "Task_Id1");
             CreateIndex("dbo.Points", "Task_Id1");
+
             AddForeignKey("dbo.Points", "Task_Id1", "dbo.Tasks", "Id");
+            AddForeignKey("dbo.Points", "Task_Id", "dbo.Tasks", "Id");
             AddForeignKey("dbo.Points", "TaskId", "dbo.Tasks", "Id");
         }
     }

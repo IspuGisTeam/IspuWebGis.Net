@@ -19,5 +19,6 @@ namespace IspuWebGis.Net.Models
         public String mode { get; set; }
         public long userId { get; set; }
         public bool isFavourite { get; set; }
+        public bool saveTask { get; set; }
     }
 }
