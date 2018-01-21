@@ -59,8 +59,9 @@ namespace IspuWebGis.Controllers
 
                 var routeCalculationRes = new RouteCalculation().Calculate(taskRequest.startPoint.toPointF(), checkpoints, parsedMode);
 
-                if(HttpContext.Current.User.Identity.Name != "_anonim")
+                if(HttpContext.Current.User.Identity.Name != "_anonim" && taskRequest.saveTask)
                 {
+
                     createTask(taskRequest, routeCalculationRes, checkpointsForDAL);
                 }
 
@@ -130,7 +131,7 @@ namespace IspuWebGis.Controllers
 
                 newCheckPoints.AddRange(newPoints);
             }
-
+            
             TasksRepo.CreateNewTask(taskRequest.name, taskRequest.mode, DateTime.Now,
                    newCheckPoints, taskRequest.isFavourite, HttpContext.Current.User.Identity.Name, checkPoints);
         }
@@ -179,13 +180,16 @@ namespace IspuWebGis.Controllers
                 taskResponse.checkpoints = convertPointsList(task.Points);
                 taskResponse.routeResult = new Route();
                 taskResponse.routeResult.mode = task.Mode;
-
-                taskResponse.routeResult.totalTime = task.Time.Ticks;
+              
                 taskResponse.routeResult.checkpoints = new List<Checkpoint>();
+
                 var checkPoint = new Checkpoint();
                 checkPoint.length = 0;
                 checkPoint.time = task.Time.Ticks;
                 checkPoint.WKTPath = convertPointsList(task.Route);
+
+                taskResponse.routeResult.checkpoints = new List<Checkpoint>();
+                taskResponse.routeResult.checkpoints.Add(checkPoint);
 
                 newTasks.Add(taskResponse);
             }
