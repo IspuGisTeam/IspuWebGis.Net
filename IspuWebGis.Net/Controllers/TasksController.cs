@@ -122,7 +122,7 @@ namespace IspuWebGis.Controllers
             float totalTime = 0;
 
             ICollection<RouteCalculationCheckpointResult> points = routeCalculationRes.Checkpoints;
-            foreach (var checkPoint in points)
+          /*  foreach (var checkPoint in points)
             {
                 var newPoints = convertPointsList(checkPoint.WKTPath);
 
@@ -130,7 +130,7 @@ namespace IspuWebGis.Controllers
                 totalTime += checkPoint.Time;
 
                 newCheckPoints.AddRange(newPoints);
-            }
+            }*/
             
             TasksRepo.CreateNewTask(taskRequest.name, taskRequest.mode, DateTime.Now,
                    newCheckPoints, taskRequest.isFavourite, HttpContext.Current.User.Identity.Name, checkPoints);
